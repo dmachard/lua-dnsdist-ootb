@@ -1,6 +1,6 @@
 # What is this?
 
-Utility to configure dnsdist.
+Utility to configure dnsdist in a new fashion way.
 
 ## Installation
 
@@ -13,8 +13,7 @@ dnsdist_utils = require "dnsdist_utils"
 ```
 ## Get started
 
-Quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers**.
-Otherwise see the full [configuration](./dnsdist.conf) for all options.
+Below a quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers**.
 
 ```lua
 -- Update the search path and load the module
@@ -37,6 +36,8 @@ opts = {
 -- load the dnsdist configuration
 dnsdist_utils.runServer{opts=opts}
 ```
+
+Otherwise see the full [configuration](./dnsdist.conf) for all options.
 
 ## More configuration options
 
