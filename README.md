@@ -13,7 +13,8 @@ dnsdist_utils = require "dnsdist_utils"
 ```
 ## Get started
 
-Below a quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers**.
+Below a quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers
+with blocklist for ads/tracking/malware domains**. The blocklist is just a text file with a list of domains to spoof.
 
 ```lua
 -- Update the search path and load the module
@@ -27,9 +28,12 @@ opts = {
         dns = {port="53"},
     },
 
+    -- blocklist for ads/tracking/malware domains
+    blocklist = {file="/etc/dnsdist/blocklist.txt"},
+
     -- Forward all dns traffic to a pool of default DNS and DoH public resolvers
     forwarders = {
-        dnsServers={ {addr="8.8.8.8:53"}, {addr="1.1.1.1:53"} }
+        dns={ {addr="8.8.8.8:53"}, {addr="1.1.1.1:53"} }
     }
 }
 

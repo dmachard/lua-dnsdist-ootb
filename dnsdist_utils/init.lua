@@ -6,6 +6,7 @@ local lib_misc = require(cur_fold .. '.misc')
 local lib_listen = require(cur_fold .. '.listen')
 local lib_logging = require(cur_fold .. '.logging')
 local lib_forwarders = require(cur_fold .. '.forwarders')
+local lib_blocklist = require(cur_fold .. '.blocklist')
 
 local utils = {
                  dnsIP4="0.0.0.0",
@@ -51,7 +52,9 @@ local utils = {
                 dohServers={
                                 {addr="8.8.8.8:443", name="dns.google"},
                                 {addr="1.1.1.1:443", name="cloudflare-dns.com"},
-                            }
+                            },
+                
+                blocklistFile="/etc/dnsdist/blocklist.txt"
   }
 
 function utils.run(arg)
@@ -194,6 +197,15 @@ function utils.run(arg)
           -- load dnsdist config
           lib_logging.file{filename=utils.logName}
         end
+    end
+
+    if blocklist then
+      if blocklist.file then
+        utils.blocklistFile = blocklist.file
+      end
+  
+      -- load dnsdist config
+      lib_blocklist.load{file=utils.blocklistFile}
     end
 
     if forwarders then
