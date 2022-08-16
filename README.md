@@ -52,3 +52,21 @@ Otherwise see the full [configuration](./dnsdist.conf) for all options.
 * **dnsdist_utils.resolvHost(name)**
 
     Resolv the provided host.
+
+    Options:
+    - name: string - dns name to resolv
+
+* **dnsdist_utils.loadBlocklist(file)**
+
+    Load blocklist for ads/tracking/malware domains
+
+    Options:
+    - file: string - file path of the list of domains to block
+
+* **dnsdist_utils.reloadBlocklist()**
+
+    Reload blocklist
+
+* **dnsdist_utils.diableBlocklist()**
+
+    Disable blocklist

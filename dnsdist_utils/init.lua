@@ -225,7 +225,10 @@ end
 local _M = {
         runServer = utils.run,
         getHostname = lib_misc.get_hostname,
-        resolvHost = lib_misc.resolv_host
+        resolvHost = lib_misc.resolv_host,
+        reloadBlocklist = lib_blocklist.reload,
+        disableBlocklist = lib_blocklist.disable,
+        loadBlocklist = lib_blocklist.load,
 }
 return _M
                                 
