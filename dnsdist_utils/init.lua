@@ -15,13 +15,14 @@ local utils = {
                  dohIP4="0.0.0.0",
                  dohIP6="[::]",
                  dohPort="443",
+                 dohCert="/etc/dnsdist/cert.pem",
+                 dohKey="/etc/dnsdist/key.pem",
 
                  dotIP4="0.0.0.0",
                  dotIP6="[::]",
                  dotPort="853",
-
-                 certFile="/etc/dnsdist/cert.pem",
-                 keyFile="/etc/dnsdist/key.pem",
+                 dotCert="/etc/dnsdist/cert.pem",
+                 dotKey="/etc/dnsdist/key.pem",
 
                  dnstapIp="127.0.0.1",
                  dnstapPort="6000",
@@ -33,7 +34,7 @@ local utils = {
 
                  adminIP4="0.0.0.0",
                  adminPort="5199",
-                 adminKey="",
+                 adminKey="pVC5gO/HECwOfgFzQDjAy6v5mWYmpwcj2h546GjqDgg=",
                  adminACL="127.0.0.1/8",
 
                  webIP4="0.0.0.0",
@@ -84,21 +85,33 @@ function utils.run(arg)
             if listen.doh.ip6 then
               utils.dohIP6 = listen.doh.ip6
             end
+            if listen.doh.cert then
+              utils.dohCert = listen.doh.cert
+            end
+            if listen.doh.key then
+              utils.dohKey = listen.doh.key
+            end
     
             -- load dnsdist config
-            lib_listen.doh{ip4=utils.dohIP4, ip6=utils.dohIP6, port=utils.dohPort, certFile=utils.certFile, keyFile=utils.keyFile}
+            lib_listen.doh{ip4=utils.dohIP4, ip6=utils.dohIP6, port=utils.dohPort, certFile=utils.dohCert, keyFile=utils.dohKey}
         end
     
         if listen.dot then
             if listen.dot.ip4 then
                utils.dotIP4 = listen.dot.ip4
              end
-             if listen.dot.ip6 then
+            if listen.dot.ip6 then
                utils.dotIP6 = listen.dot.ip6
-             end
+            end
+            if listen.dot.cert then
+              utils.dotCert = listen.dot.cert
+            end
+            if listen.dot.key then
+              utils.dotKey = listen.dot.key
+            end
      
              -- load dnsdist config
-             lib_listen.dot{ip4=utils.dotIP4, ip6=utils.dotIP6, port=utils.dotPort, certFile=utils.certFile, keyFile=utils.keyFile}
+             lib_listen.dot{ip4=utils.dotIP4, ip6=utils.dotIP6, port=utils.dotPort, certFile=utils.dotCert, keyFile=utils.dotKey}
         end
     end
 
@@ -199,7 +212,8 @@ end
 -- export functions
 local _M = {
         runServer = utils.run,
-        getHostname = lib_misc.get_hostname
+        getHostname = lib_misc.get_hostname,
+        resolvHost = lib_misc.resolv_host
 }
 return _M
                                 

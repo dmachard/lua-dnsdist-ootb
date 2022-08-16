@@ -14,6 +14,7 @@ dnsdist_utils = require "dnsdist_utils"
 ## Get started
 
 Quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers**.
+Otherwise see the full [configuration](./dnsdist.conf) for all options.
 
 ```lua
 -- Update the search path and load the module
@@ -36,3 +37,13 @@ opts = {
 -- load the dnsdist configuration
 dnsdist_utils.runServer{opts=opts}
 ```
+
+## More configuration options
+
+* **dnsdist_utils.getHosname()**
+
+    Return the hostname of the server.
+
+* **dnsdist_utils.resolvHost(name)**
+
+    Resolv the provided host.
