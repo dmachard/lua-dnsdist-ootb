@@ -54,7 +54,9 @@ local utils = {
                                 {addr="1.1.1.1:443", name="cloudflare-dns.com"},
                             },
                 
-                blocklistFile="/etc/dnsdist/blocklist.txt"
+                blocklistCdbFile="/etc/dnsdist/blocklist.cdb",
+                blocklistCdbRefresh=3600,
+           
   }
 
 function utils.run(arg)
@@ -200,13 +202,18 @@ function utils.run(arg)
     end
 
     if blocklist then
-      if blocklist.file then
-        utils.blocklistFile = blocklist.file
+      if blocklist.cdb then
+        if blocklist.cdb.file then
+          utils.blocklistCdbFile = blocklist.cdb.file
+        end
+        if blocklist.cdb.refresh then
+          utils.blocklistCdbRefresh = blocklist.cdb.refresh
+        end
       end
   
       -- load dnsdist config
-      lib_blocklist.load{file=utils.blocklistFile}
-    end
+      lib_blocklist.load_cdb{file=utils.blocklistCdbFile, refresh=utils.blocklistCdbRefresh}
+    end  
 
     if forwarders then
         if forwarders.dns then
@@ -226,9 +233,8 @@ local _M = {
         runServer = utils.run,
         getHostname = lib_misc.get_hostname,
         resolvHost = lib_misc.resolv_host,
-        reloadBlocklist = lib_blocklist.reload,
-        disableBlocklist = lib_blocklist.disable,
-        loadBlocklist = lib_blocklist.load,
+        disableBlocklist = lib_blocklist.disable_cdb,
+        loadBlocklist = lib_blocklist.load_cdb,
 }
 return _M
                                 

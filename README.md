@@ -56,16 +56,14 @@ Otherwise see the full [configuration](./dnsdist.conf) for all options.
     Options:
     - name: string - dns name to resolv
 
-* **dnsdist_utils.loadBlocklist(file)**
+* **dnsdist_utils.loadBlocklist(file, refresh)**
 
-    Load blocklist for ads/tracking/malware domains
+    Load ads/tracking/malware domains for blocking
+    Based on a CDB key/value database.
 
     Options:
     - file: string - file path of the list of domains to block
-
-* **dnsdist_utils.reloadBlocklist()**
-
-    Reload blocklist
+    - refresh: integer - interval to check if the database need to be reloaded, 3600s by default
 
 * **dnsdist_utils.diableBlocklist()**
 
