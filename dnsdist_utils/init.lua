@@ -9,55 +9,55 @@ local lib_forwarders = require(cur_fold .. '.forwarders')
 local lib_blocklist = require(cur_fold .. '.blocklist')
 
 local utils = {
-                 dnsIP4="0.0.0.0",
-                 dnsIP6="[::]",
-                 dnsPort="53",
+                dnsIP4="0.0.0.0",
+                dnsIP6="[::]",
+                dnsPort=53,
 
-                 dohIP4="0.0.0.0",
-                 dohIP6="[::]",
-                 dohPort="443",
-                 dohCert="/etc/dnsdist/cert.pem",
-                 dohKey="/etc/dnsdist/key.pem",
+                dohIP4="0.0.0.0",
+                dohIP6="[::]",
+                dohPort=443,
+                dohCert="/etc/dnsdist/cert.pem",
+                dohKey="/etc/dnsdist/key.pem",
 
-                 dotIP4="0.0.0.0",
-                 dotIP6="[::]",
-                 dotPort="853",
-                 dotCert="/etc/dnsdist/cert.pem",
-                 dotKey="/etc/dnsdist/key.pem",
+                dotIP4="0.0.0.0",
+                dotIP6="[::]",
+                dotPort=853,
+                dotCert="/etc/dnsdist/cert.pem",
+                dotKey="/etc/dnsdist/key.pem",
 
-                 dnstapIp="127.0.0.1",
-                 dnstapPort="6000",
+                fwdLogIp="127.0.0.1",
+                fwdLogPort=6000,
+                fwdLogProto="dnstap",
 
-                 protobufIP="127.0.0.1",
-                 protobufPort="6000",
+                bckLogIp="127.0.0.1",
+                bckLogPort=6000,
+                bckLogProto="dnstap",
 
-                 logName="/tmp/dnsdist-traffic.log",
+                adminIP4="0.0.0.0",
+                adminPort=5199,
+                adminKey="pVC5gO/HECwOfgFzQDjAy6v5mWYmpwcj2h546GjqDgg=",
+                adminACL="127.0.0.1/8",
 
-                 adminIP4="0.0.0.0",
-                 adminPort="5199",
-                 adminKey="pVC5gO/HECwOfgFzQDjAy6v5mWYmpwcj2h546GjqDgg=",
-                 adminACL="127.0.0.1/8",
+                webIP4="0.0.0.0",
+                webPort=8083,
+                webACL="0.0.0.0/0",
+                webApiKey="<secret>",
+                webPwd="<secret>",
 
-                 webIP4="0.0.0.0",
-                 webPort="8083",
-                 webACL="0.0.0.0/0",
-                 webApiKey="<secret>",
-                 webPwd="<secret>",
-
-                 dnsServers={
+                dnsServers={
                                 {addr="8.8.8.8:53"},
                                 {addr="9.9.9.9:53"},
                                 {addr="1.1.1.1:53"},
-                },
+                            },
                 dohServers={
                                 {addr="8.8.8.8:443", name="dns.google"},
                                 {addr="1.1.1.1:443", name="cloudflare-dns.com"},
                             },
-                
+
                 blocklistCdbFile="/etc/dnsdist/blocklist.cdb",
                 blocklistCdbRefresh=3600,
-           
-  }
+                blocklistCdbSpoof="nxdomain"           
+}
 
 function utils.run(arg)
     opts = arg.opts
@@ -118,6 +118,9 @@ function utils.run(arg)
              -- load dnsdist config
              lib_listen.dot{ip4=utils.dotIP4, ip6=utils.dotIP6, port=utils.dotPort, certFile=utils.dotCert, keyFile=utils.dotKey}
         end
+
+        -- load dnsdist config
+        lib_listen.add_actions()
     end
 
 
@@ -162,45 +165,6 @@ function utils.run(arg)
         end
     end
 
-    if logging then
-        if logging.dnstap then
-          if logging.dnstap.ip then
-              utils.dnstapIp = logging.dnstap.ip
-            end
-            if logging.dnstap.port then
-              utils.dnstapPort = logging.dnstap.port
-            end
-    
-          streamId = lib_misc.get_hostname()
-    
-          -- load dnsdist config
-          lib_logging.dnstap{ip=utils.dnstapIp, port=utils.dnstapPort, streamId=streamId}
-        end
-    
-        if logging.protobuf then
-          if logging.protobuf.ip then
-            utils.protobufIp = logging.protobuf.ip
-          end
-          if logging.dnstap.port then
-            utils.protobufPort = logging.protobuf.port
-          end
-    
-          streamId = lib_misc.get_hostname()
-    
-          -- load dnsdist config
-          lib_logging.protobuf{ip=utils.protobufIp, port=utils.protobufPort, streamId=streamId}
-        end
-    
-        if logging.file then
-          if logging.file.name then
-            utils.logName = logging.file.name
-          end
-    
-          -- load dnsdist config
-          lib_logging.file{filename=utils.logName}
-        end
-    end
-
     if blocklist then
       if blocklist.cdb then
         if blocklist.cdb.file then
@@ -213,7 +177,55 @@ function utils.run(arg)
   
       -- load dnsdist config
       lib_blocklist.load_cdb{file=utils.blocklistCdbFile, refresh=utils.blocklistCdbRefresh}
-    end  
+    end
+  
+    if logging then
+      if logging.forwarded then
+        if logging.forwarded.ip then
+            utils.fwdLogIp = logging.forwarded.ip
+          end
+          if logging.forwarded.port then
+            utils.fwdLogPort = logging.forwarded.port
+          end
+          if logging.forwarded.protocol then
+            utils.fwdLogProto = logging.forwarded.protocol
+          end
+  
+        streamId = lib_misc.get_hostname()
+  
+        -- load dnsdist config
+        lib_logging.log_forwarded{ip=utils.fwdLogIp, port=utils.fwdLogPort, streamId=streamId .. "-forwarded", mode=utils.fwdLogProto}
+      end
+  
+      if logging.blocked then
+        if logging.blocked.ip then
+          utils.bckLogIp = logging.blocked.ip
+        end
+        if logging.blocked.port then
+          utils.kbckLogPort = logging.blocked.port
+        end
+        if logging.blocked.protocol then
+          utils.bckLogProto = logging.blocked.protocol
+        end
+  
+        streamId = lib_misc.get_hostname()
+  
+        -- load dnsdist config
+        lib_logging.log_blocked{ip=utils.bckLogIp, port=utils.bckLogPort, streamId=streamId .. "-blocked", mode=utils.fwdLogProto}
+      end  
+    end
+
+    if blocklist then
+      if blocklist.cdb then
+        if blocklist.cdb.spoof then
+          utils.blocklistCdbSpoof = blocklist.cdb.spoof
+        end
+      end
+  
+      -- load dnsdist config
+      lib_blocklist.add_actions{spoof=utils.blocklistCdbSpoof}
+    end
+  
 
     if forwarders then
         if forwarders.dns then
@@ -233,8 +245,6 @@ local _M = {
         runServer = utils.run,
         getHostname = lib_misc.get_hostname,
         resolvHost = lib_misc.resolv_host,
-        disableBlocklist = lib_blocklist.disable_cdb,
-        loadBlocklist = lib_blocklist.load_cdb,
 }
 return _M
                                 

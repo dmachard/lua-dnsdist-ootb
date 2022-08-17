@@ -19,4 +19,8 @@ function listen.dot(arg)
   addTLSLocal(arg.ip6 .. ":" .. arg.port, arg.certFile, arg.keyFile)
 end
 
+function listen.add_actions(arg)
+  addAction(AllRule(),  SetTagAction("policy", ""))
+end
+
 return listen
