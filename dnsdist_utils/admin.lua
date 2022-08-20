@@ -1,13 +1,12 @@
-
 local admin = {}
 
-function admin.console(arg)
+function admin.listen_console(arg)
   setKey(arg.key)
   controlSocket(arg.ip4 .. ":" .. arg.port)
   addConsoleACL(arg.acl)
 end
 
-function admin.web(arg)
+function admin.listen_web(arg)
   webserver(arg.ip4 .. ":" .. arg.port)
   setWebserverConfig({
     apiKey = arg.key,
@@ -16,5 +15,9 @@ function admin.web(arg)
   })
 end
 
-return admin
+function admin.secpoll(arg)
+  setSecurityPollInterval(arg.interval)
+  setSecurityPollSuffix(arg.suffix)
+end
 
+return admin

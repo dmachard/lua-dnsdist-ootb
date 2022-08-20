@@ -1,243 +1,279 @@
-
 local cur_fold = (...):gsub('%.init$', '')
 
 local lib_admin = require(cur_fold .. '.admin')
+local lib_srvs = require(cur_fold .. '.services')
 local lib_misc = require(cur_fold .. '.misc')
-local lib_listen = require(cur_fold .. '.listen')
-local lib_logging = require(cur_fold .. '.logging')
-local lib_forwarders = require(cur_fold .. '.forwarders')
-local lib_blocklist = require(cur_fold .. '.blocklist')
+local lib_rules = require(cur_fold .. '.rules')
 
-local utils = {
-                dnsIP4="0.0.0.0",
-                dnsIP6="[::]",
-                dnsPort=53,
+local Services = {}
+Services.new = function()
+    local self = {}
 
-                dohIP4="0.0.0.0",
-                dohIP6="[::]",
-                dohPort=443,
-                dohCert="/etc/dnsdist/cert.pem",
-                dohKey="/etc/dnsdist/key.pem",
+    self.dnsIP4="0.0.0.0"
+    self.dnsIP6="[::]"
+    self.dnsPort=53
 
-                dotIP4="0.0.0.0",
-                dotIP6="[::]",
-                dotPort=853,
-                dotCert="/etc/dnsdist/cert.pem",
-                dotKey="/etc/dnsdist/key.pem",
+    self.dohIP4="0.0.0.0"
+    self.dohIP6="[::]"
+    self.dohPort=443
+    self.dohCert="/etc/dnsdist/cert.pem"
+    self.dohKey="/etc/dnsdist/key.pem"
 
-                fwdLogIp="127.0.0.1",
-                fwdLogPort=6000,
-                fwdLogProto="dnstap",
+    self.dotIP4="0.0.0.0"
+    self.dotIP6="[::]"
+    self.dotPort=853
+    self.dotCert="/etc/dnsdist/cert.pem"
+    self.dotKey="/etc/dnsdist/key.pem"
 
-                bckLogIp="127.0.0.1",
-                bckLogPort=6000,
-                bckLogProto="dnstap",
+    return self
+end
 
-                adminIP4="0.0.0.0",
-                adminPort=5199,
-                adminKey="pVC5gO/HECwOfgFzQDjAy6v5mWYmpwcj2h546GjqDgg=",
-                adminACL="127.0.0.1/8",
+local Admin = {}
+Admin.new = function()
+        local self = {}
 
-                webIP4="0.0.0.0",
-                webPort=8083,
-                webACL="0.0.0.0/0",
-                webApiKey="<secret>",
-                webPwd="<secret>",
+        self.adminIP4="0.0.0.0"
+        self.adminPort=5199
+        self.adminKey="pVC5gO/HECwOfgFzQDjAy6v5mWYmpwcj2h546GjqDgg="
+        self.adminACL="127.0.0.1/8"
 
-                dnsServers={
-                                {addr="8.8.8.8:53"},
-                                {addr="9.9.9.9:53"},
-                                {addr="1.1.1.1:53"},
-                            },
-                dohServers={
-                                {addr="8.8.8.8:443", name="dns.google"},
-                                {addr="1.1.1.1:443", name="cloudflare-dns.com"},
-                            },
+        self.webIP4="0.0.0.0"
+        self.webPort=8083
+        self.webACL="0.0.0.0/0"
+        self.webApiKey="<secret>"
+        self.webPwd="<secret>"
 
-                blocklistCdbFile="/etc/dnsdist/blocklist.cdb",
-                blocklistCdbRefresh=3600,
-                blocklistCdbSpoof="nxdomain"           
-}
+        self.secpollInterval=3600
+        self.secpollSuffix="secpoll.powerdns.com" --setting to an empty string disables secpoll.
+
+        return self
+end
+
+local Rule = {}
+Rule.new = function()
+        local self = {}
+
+        self.logIp="127.0.0.1"
+        self.logPort=6000
+        self.logProto="protobuf"
+
+        self.dnsServers={
+                                -- {ip="8.8.8.8", port="53"},
+                                -- {ip="9.9.9.9", port="53"},
+                                -- {ip="1.1.1.1", port="53"},
+                            }
+        self.dohServers={
+                                -- {ip="8.8.8.8", port="443", name="dns.google"},
+                                -- {ip="1.1.1.1", port="443", name="cloudflare-dns.com"},
+                            }
+
+        self.qnameCdbReload=3600
+
+        self.rulePolicy="passthru"
+        self.ruleName=""
+
+        self.zoneSet = { "." }
+
+        return self
+end
+
+local utils = {}
 
 function utils.run(arg)
-    opts = arg.opts
+  opts = arg.opts
 
-    admin = arg.opts.admin
-    listen = arg.opts.listen
-    forwarders = arg.opts.forwarders
-    logging = arg.opts.logging
+  services = arg.opts.services
+  admin = arg.opts.admin
+  rules = arg.opts.rules
 
-    if listen then
-        if listen.dns then
-            if listen.dns.ip4 then
-              utils.dnsIP4 = listen.dns.ip4
-            end
-            if listen.dns.ip6 then
-              utils.dnsIP6 = listen.dns.ip6
-            end
-            if listen.dns.port then
-              utils.dnsPort = listen.dns.port
-            end
-    
-            -- load dnsdist config
-            lib_listen.dns{ip4=utils.dnsIP4, ip6=utils.dnsIP6, port=utils.dnsPort}
-        end
-    
-        if listen.doh then
-           if listen.doh.ip4 then
-              utils.dohIP4 = listen.doh.ip4
-            end
-            if listen.doh.ip6 then
-              utils.dohIP6 = listen.doh.ip6
-            end
-            if listen.doh.cert then
-              utils.dohCert = listen.doh.cert
-            end
-            if listen.doh.key then
-              utils.dohKey = listen.doh.key
-            end
-    
-            -- load dnsdist config
-            lib_listen.doh{ip4=utils.dohIP4, ip6=utils.dohIP6, port=utils.dohPort, certFile=utils.dohCert, keyFile=utils.dohKey}
-        end
-    
-        if listen.dot then
-            if listen.dot.ip4 then
-               utils.dotIP4 = listen.dot.ip4
-             end
-            if listen.dot.ip6 then
-               utils.dotIP6 = listen.dot.ip6
-            end
-            if listen.dot.cert then
-              utils.dotCert = listen.dot.cert
-            end
-            if listen.dot.key then
-              utils.dotKey = listen.dot.key
-            end
-     
-             -- load dnsdist config
-             lib_listen.dot{ip4=utils.dotIP4, ip6=utils.dotIP6, port=utils.dotPort, certFile=utils.dotCert, keyFile=utils.dotKey}
-        end
+  -- init default values
+  adm = Admin.new()
 
-        -- load dnsdist config
-        lib_listen.add_actions()
-    end
+  -- disable security polling by default
+  lib_admin.secpoll{interval=adm.secpollInterval, suffix=""}
 
+  -- start default dns service
+  if services ~= nil then
+    lib_srvs.listen_dns{ip4=srv.dnsIP4, ip6=srv.dnsIP6, port=srv.dnsPort}
+  end
 
-    if admin then
-        if admin.console then
-          if admin.console.ip4 then
-            utils.adminIP4 = admin.console.ip4
-          end
-          if admin.console.port then
-            utils.adminPort = admin.console.port
-          end
-          if admin.console.acl then
-            utils.adminACL = admin.console.acl
-          end
-          if admin.console.key then
-            utils.adminKey = admin.console.key
-          end
-    
-          -- load dnsdist config
-          lib_admin.console{key=utils.adminKey, ip4=utils.adminIP4, port=utils.adminPort, acl=utils.adminACL}
-        end
-    
-        if admin.web then
-          if admin.web.ip4 then
-            utils.webIP4 = admin.web.ip4
-          end
-          if admin.web.port then
-            utils.webPort = admin.web.port
-          end
-          if admin.web.acl then
-            utils.webACL = admin.web.acl
-          end
-          if admin.web.apikey then
-            utils.webApiKey = admin.web.apikey
-          end
-          if admin.web.password then
-            utils.webPwd = admin.web.password
-          end
-    
-          -- load dnsdist config
-          lib_admin.web{key=utils.webApiKey, pwd=utils.webPwd, ip4=utils.webIP4, port=utils.webPort, acl=utils.webACL}
-        end
-    end
-
-    if blocklist then
-      if blocklist.cdb then
-        if blocklist.cdb.file then
-          utils.blocklistCdbFile = blocklist.cdb.file
-        end
-        if blocklist.cdb.refresh then
-          utils.blocklistCdbRefresh = blocklist.cdb.refresh
-        end
+  -- init default values
+  srv = Services.new()
+  if services then
+    if services.dns then
+      if services.dns.ip4 then
+        srv.dnsIP4 = services.dns.ip4
       end
-  
+      if services.dns.ip6 then
+        srv.dnsIP6 = services.dns.ip6
+      end
+      if services.dns.port then
+        srv.dnsPort = services.dns.port
+      end
+
       -- load dnsdist config
-      lib_blocklist.load_cdb{file=utils.blocklistCdbFile, refresh=utils.blocklistCdbRefresh}
+      lib_srvs.listen_dns{ip4=srv.dnsIP4, ip6=srv.dnsIP6, port=srv.dnsPort}
     end
-  
-    if logging then
-      if logging.forwarded then
-        if logging.forwarded.ip then
-            utils.fwdLogIp = logging.forwarded.ip
-          end
-          if logging.forwarded.port then
-            utils.fwdLogPort = logging.forwarded.port
-          end
-          if logging.forwarded.protocol then
-            utils.fwdLogProto = logging.forwarded.protocol
-          end
-  
-        streamId = lib_misc.get_hostname()
-  
-        -- load dnsdist config
-        lib_logging.log_forwarded{ip=utils.fwdLogIp, port=utils.fwdLogPort, streamId=streamId .. "-forwarded", mode=utils.fwdLogProto}
+    if services.doh then
+      if services.doh.ip4 then
+        srv.dohIP4 = services.doh.ip4
       end
-  
-      if logging.blocked then
-        if logging.blocked.ip then
-          utils.bckLogIp = logging.blocked.ip
-        end
-        if logging.blocked.port then
-          utils.kbckLogPort = logging.blocked.port
-        end
-        if logging.blocked.protocol then
-          utils.bckLogProto = logging.blocked.protocol
-        end
-  
-        streamId = lib_misc.get_hostname()
-  
-        -- load dnsdist config
-        lib_logging.log_blocked{ip=utils.bckLogIp, port=utils.bckLogPort, streamId=streamId .. "-blocked", mode=utils.fwdLogProto}
-      end  
-    end
+      if services.doh.ip6 then
+        srv.dohIP6 = services.doh.ip
+      end
+      if services.doh.cert then
+        srv.dohCert = services.doh.cert
+      end
+      if services.doh.key then
+        srv.dohKey = services.doh.key
+      end
 
-    if blocklist then
-      if blocklist.cdb then
-        if blocklist.cdb.spoof then
-          utils.blocklistCdbSpoof = blocklist.cdb.spoof
-        end
-      end
-  
       -- load dnsdist config
-      lib_blocklist.add_actions{spoof=utils.blocklistCdbSpoof}
+      lib_srvs.listen_doh{ip4=srv.dohIP4, ip6=srv.dohIP6, port=srv.dohPort, certFile=srv.dohCert, keyFile=srv.dohKey}
     end
-  
+    if services.dot then
+      if services.dot.ip4 then
+        srv.dotIP4 = services.dot.ip4
+      end
+      if services.dot.ip6 then
+        srv.dotIP6 = services.dot.ip6
+      end
+      if services.dot.cert then
+        srv.dotCert = services.dot.cert
+      end
+      if services.dot.key then
+        srv.dotKey = services.dot.key
+      end
 
-    if forwarders then
-        if forwarders.dns then
-          utils.dnsServers = forwarders.dns
-        end
-        if forwarders.doh then
-          utils.dohServers = forwarders.doh
-        end
-    
-        -- load dnsdist config
-        lib_forwarders.pool{dnsServers=utils.dnsServers, dohServers=utils.dohServers}
+      -- load dnsdist config
+      lib_srvs.listen_dot{ip4=srv.dotIP4, ip6=srv.dotIP6, port=srv.dotPort, certFile=srv.dotCert, keyFile=srv.dotKey}
     end
+  end
+
+  if admin then
+    if admin.console then
+      if admin.console.ip4 then
+        adm.adminIP4 = admin.console.ip4
+      end
+      if admin.console.port then
+        adm.adminPort = admin.console.port
+      end
+      if admin.console.acl then
+        adm.adminACL = admin.console.acl
+      end
+      if admin.console.key then
+        adm.adminKey = admin.console.key
+      end
+
+      -- load dnsdist config
+      lib_admin.listen_console{key=adm.adminKey, ip4=adm.adminIP4, port=adm.adminPort, acl=adm.adminACL}
+    end
+
+    if admin.web then
+      if admin.web.ip4 then
+        adm.webIP4 = admin.web.ip4
+      end
+      if admin.web.port then
+        adm.webPort = admin.web.port
+      end
+      if admin.web.acl then
+        adm.webACL = admin.web.acl
+      end
+      if admin.web.apikey then
+        adm.webApiKey = admin.web.apikey
+      end
+      if admin.web.password then
+        adm.webPwd = admin.web.password
+      end
+
+      -- load dnsdist config
+      lib_admin.listen_web{key=adm.webApiKey, pwd=adm.webPwd, ip4=adm.webIP4, port=adm.webPort, acl=adm.webACL}
+    end
+
+    if admin.secpoll then
+      if admin.secpoll.interval then
+        adm.secpollInterval = admin.secpoll.interval
+      end
+      if admin.secpoll.suffix then
+        adm.secpollSuffix = admin.secpoll.suffix
+      end
+      lib_admin.secpoll{interval=adm.secpollInterval, suffix=adm.secpollSuffix}
+    end
+  end
+
+  if rules then
+    for i,cur_rule in pairs(rules) do
+      local rule = Rule.new()
+
+      if cur_rule.name then
+        rule.ruleName = cur_rule.name
+      end
+
+      if cur_rule.policy then
+        rule.rulePolicy = cur_rule.policy
+      end
+
+      if cur_rule.zoneset then
+        rule.zoneSet = cur_rule.zoneset
+        -- load dnsdist config
+        lib_rules.match_zone_set{id=i, name=rule.ruleName, policy=rule.rulePolicy, set=rule.zoneSet}
+      end
+
+      if cur_rule.qnamecdb then
+        if cur_rule.qnamecdb.reload then
+          rule.qnamecdbReload = cur_rule.qnamecdb.reload
+        end
+        -- load dnsdist config
+        lib_rules.match_qname_cdb{id=i, name=rule.cur_ruleName, policy=rule.rulePolicy,
+                                  filename=cur_rule.qnamecdb.filename, reload=rule.qnameCdbReload}
+      end
+
+      if cur_rule.zoneset == nil and cur_rule.qnamecdb==nil then
+        -- load dnsdist config
+        lib_rules.match_zone_set{id=i, name=rule.ruleName, policy=rule.rulePolicy, set=rule.zoneSet}
+      end
+
+      if cur_rule.logging then
+        if cur_rule.logging.ip then
+          rule.logIp = cur_rule.logging.ip
+        end
+        if cur_rule.logging.port then
+          rule.logPort = cur_rule.logging.port
+        end
+        if cur_rule.logging.protocol then
+          rule.logProto = cur_rule.logging.protocol
+        end
+
+        streamId = lib_misc.get_hostname() .. "-" .. rule.ruleName .. "-" .. cur_rule.policy
+
+        if cur_rule.logging.streamid then
+          streamId = cur_rule.logging.streamid
+        end
+
+        -- load dnsdist config
+        lib_rules.set_remote_logging{id=i, name=rule.ruleName, policy=rule.rulePolicy,
+                                     ip=rule.logIp, port=rule.logPort,
+                                     streamId=streamId, mode=rule.logProto}
+      end
+
+      if cur_rule.upstreams then
+        if cur_rule.upstreams.dns then
+          rule.dnsServers = cur_rule.upstreams.dns
+        end
+        if cur_rule.upstreams.doh then
+          rule.dohServers = cur_rule.upstreams.doh
+        end
+        -- load dnsdist config
+        lib_rules.pool{id=i, name=rule.ruleName, dnsServers=rule.dnsServers, dohServers=rule.dohServers}
+      end
+
+      -- load dnsdist config
+      lib_rules.set_policy{id=i, name=rule.ruleName, policy=rule.rulePolicy}
+    end
+  end
+
+  -- refused all traffic by default
+  addAction(AllRule(), RCodeAction(DNSRCode.REFUSED))
 end
 
 -- export functions
@@ -247,4 +283,3 @@ local _M = {
         resolvHost = lib_misc.resolv_host,
 }
 return _M
-                                

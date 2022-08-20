@@ -14,36 +14,26 @@ dnsdist_utils = require "dnsdist_utils"
 ## Get started
 
 Below a quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers
-with blocklist for ads/tracking/malware domains**. The blocklist is a CDB database.
+with blocklist for ads/tracking/malware domains**. The blocklist is a CDB database with hourly reload.
 
 ```lua
--- Update the search path and load the module
 package.path = "/etc/dnsdist/" .. package.path
 dnsdist_utils = require "dnsdist_utils"
 
--- describe your config
 opts = {
-    -- Listen DNS
-    listen = {
-        dns = {port="53"},
-    },
+    rules = {
+        -- rule #1: block ads/tracking/malware domains
+        { qnamecdb = {filename="/etc/dnsdist/blocklist.cdb"},  policy = "drop"},
 
-    -- enable blocklist for ads/tracking/malware domains
-    blocklist = {
-        cdb={file="/etc/dnsdist/blocklist.cdb"}
-    },
-
-    -- Forward all dns traffic to a pool of default DNS and DoH public resolvers
-    forwarders = {
-        dns={ {ip="8.8.8.8"}, {ip="1.1.1.1"} }
+        -- rule #2: otherwise forward the rest to a pool of default DNS servers
+        { upstreams = { dns={ {ip="8.8.8.8"}, {ip="9.9.9.9"} } } },
     }
 }
 
--- load the dnsdist configuration
 dnsdist_utils.runServer{opts=opts}
 ```
 
-Otherwise see the full [configuration](./dnsdist.conf) for all options.
+Otherwise see the full **[configuration](./dnsdist.conf)** for all options.
 
 ## More configuration options
 
