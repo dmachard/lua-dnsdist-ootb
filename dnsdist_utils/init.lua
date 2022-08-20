@@ -88,7 +88,8 @@ function utils.run(arg)
 
   -- init default values
   adm = Admin.new()
-
+  srv = Services.new()
+  
   -- disable security polling by default
   lib_admin.secpoll{interval=adm.secpollInterval, suffix=""}
 
@@ -97,8 +98,6 @@ function utils.run(arg)
     lib_srvs.listen_dns{ip4=srv.dnsIP4, ip6=srv.dnsIP6, port=srv.dnsPort}
   end
 
-  -- init default values
-  srv = Services.new()
   if services then
     if services.dns then
       if services.dns.ip4 then

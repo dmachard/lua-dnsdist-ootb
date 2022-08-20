@@ -1,6 +1,7 @@
 # What is this?
 
-Utility to configure dnsdist in a new fashion way.
+Utility to configure dnsdist in a quick way.
+See the complete **[configuration](./examples/0.dnsdist.conf)** file for all options.
 
 ## Installation
 
@@ -13,8 +14,8 @@ dnsdist_utils = require "dnsdist_utils"
 ```
 ## Get started
 
-Below a quick configuration to start dnsdist like a **Forwarding and Caching DNS Server to a pool of DNS public servers
-with blocklist for ads/tracking/malware domains**. The blocklist is a CDB database with hourly reload.
+Below a quick configuration to start dnsdist like a `Forwarding and Caching DNS Server` to a pool of DNS public servers
+with blocklist for ads/tracking/malware domains. The `blocklist.cdb` file is a CDB database.
 
 ```lua
 package.path = "/etc/dnsdist/" .. package.path
@@ -32,8 +33,6 @@ opts = {
 
 dnsdist_utils.runServer{opts=opts}
 ```
-
-Otherwise see the full **[configuration](./dnsdist.conf)** for all options.
 
 ## More configuration options
 
