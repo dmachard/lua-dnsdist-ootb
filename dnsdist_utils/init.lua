@@ -243,7 +243,7 @@ function utils.run(arg)
           rule.logProto = cur_rule.logging.protocol
         end
 
-        streamId = lib_misc.get_hostname() .. "-" .. rule.ruleName .. "-" .. cur_rule.policy
+        streamId = lib_misc.get_hostname() .. "-" .. rule.ruleName .. "-" .. rule.rulePolicy
 
         if cur_rule.logging.streamid then
           streamId = cur_rule.logging.streamid
