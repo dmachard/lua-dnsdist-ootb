@@ -23,6 +23,7 @@ dnsdist_utils = require "dnsdist_utils"
 Below a quick configuration to start dnsdist like a `Forwarding and Caching DNS Server` to a pool of DNS public servers.
 
 ```lua
+-- Import module
 package.path = "/etc/dnsdist/" .. package.path
 dnsdist_utils = require "dnsdist_utils"
 
@@ -43,6 +44,7 @@ opts = {
     }
 }
 
+-- Generate dnsdist config
 dnsdist_utils.runServer{opts=opts}
 ```
 
