@@ -58,7 +58,7 @@ dnsdist_utils.runServer{opts=opts}
 
 ## Docker 
 
-1. Create the folder `dnsdistutils` with the following content
+1. Create the folder `conf` with the following content
    - conf/
      - dnsdist_utils/
      - dnsdist_utils.lua
