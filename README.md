@@ -56,6 +56,30 @@ dnsdist_utils.runServer{opts=opts}
 - [x] [Use case 4: Split between corporate and external DNS](./examples/4.dnsdist.conf)
 - [x] [Use case 5: Traffic remote logging per rule](./examples/5.dnsdist.conf)
 
+## Docker 
+
+1. Create the folder `dnsdistutils` with the following content
+   - conf/
+     - dnsdist_utils/
+     - dnsdist_utils.lua
+     - dnsdist.conf
+
+2. Import the module for the docker image like this
+
+```
+-- Import module
+package.path = "/etc/dnsdist/conf.d/" .. package.path
+dnsdist_utils = require "dnsdist_utils"
+```
+
+3. Configure your dnsdist config file
+
+4. Then mount the folder as a volume 
+
+```
+sudo docker run -d -p 53:53/udp -p 53:53/tcp --restart unless-stopped --name=dnsdist --volume=$PWD/conf/:/etc/dnsdist/conf.d/ powerdns/dnsdist-17:1.7.2
+```
+
 ## More configuration options
 
 This module provide also some functions:
