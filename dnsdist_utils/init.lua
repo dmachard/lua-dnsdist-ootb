@@ -118,7 +118,7 @@ function utils.run(arg)
         srv.dohIP4 = services.doh.ip4
       end
       if services.doh.ip6 then
-        srv.dohIP6 = services.doh.ip
+        srv.dohIP6 = services.doh.ip6
       end
       if services.doh.cert then
         srv.dohCert = services.doh.cert
