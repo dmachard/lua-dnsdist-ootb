@@ -57,9 +57,10 @@ rules:
 -- Import module
 package.path = "/etc/dnsdist/conf.d/" .. package.path
 dnsdist_utils = require "dnsdist_utils"
+dnsdist_utils.loadConfig{file="/etc/dnsdist/conf.d/dnsdist.yml"}
 ```
 
-3. Configure your dnsdist config file
+3. Configure your `dnsdist.yml` config file
 
 4. Then mount the folder as a volume 
 
