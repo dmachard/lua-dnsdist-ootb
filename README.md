@@ -50,6 +50,7 @@ rules:
      - dnsdist_utils/
      - dnsdist_utils.lua
      - dnsdist.conf
+     - dnsdist.yml
 
 2. Import the module for the docker image like this
 
