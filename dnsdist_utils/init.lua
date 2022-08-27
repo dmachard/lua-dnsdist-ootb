@@ -250,6 +250,9 @@ function utils.run_server(arg)
       end
 
       if cur_rule.logging then
+        if cur_rule.logging.host then
+          rule.logIp = lib_misc.resolv_host(cur_rule.logging.host)
+        end
         if cur_rule.logging.ip then
           rule.logIp = cur_rule.logging.ip
         end
