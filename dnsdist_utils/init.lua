@@ -5,6 +5,8 @@ local lib_srvs = require(cur_fold .. '.services')
 local lib_misc = require(cur_fold .. '.misc')
 local lib_rules = require(cur_fold .. '.rules')
 
+local yaml = require(cur_fold .. '.tinyyaml')
+
 local Services = {}
 Services.new = function()
     local self = {}
@@ -79,12 +81,27 @@ end
 
 local utils = {}
 
-function utils.run(arg)
+
+function utils.load_yaml(arg)
+  infolog("loading config yaml file...")
+  local f = assert(io.open(arg.file, "rb"))
+  local content = f:read("*all")
+  f:close()
+
+  -- load content as yaml
+  config = yaml.parse(content)
+
+  -- finally load config
+  utils.run_server{opts=config}
+
+end
+
+function utils.run_server(arg)
   opts = arg.opts
 
-  services = arg.opts.services
-  admin = arg.opts.admin
-  rules = arg.opts.rules
+  services = opts.services
+  admin = opts.admin
+  rules = opts.rules
 
   -- init default values
   adm = Admin.new()
@@ -277,7 +294,8 @@ end
 
 -- export functions
 local _M = {
-        runServer = utils.run,
+        runServer = utils.run_server,
+        loadConfig = utils.load_yaml,
         getHostname = lib_misc.get_hostname,
         resolvHost = lib_misc.resolv_host,
 }

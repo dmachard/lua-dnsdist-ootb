@@ -1,0 +1,31 @@
+
+rules:
+  # rule to block ads/tracking/malware domain
+  # remote logging of the traffic to a remote collector https://github.com/dmachard/go-dns-collector
+  - name: blacklist
+    qnamecdb:
+      filename: /etc/dnsdist/blocklist.cdb
+    policy: drop
+    logging:
+      protocol: protobuf
+      ip: 192.168.1.200
+      port: 6000
+      streamid: blocked
+
+  # rule to forward on internal dns servers without logging
+  - name: internal
+    zoneset: [ network.private ]
+    upstreams:
+      dns:
+        - ip: 192.168.1.1
+
+  # rule to forward to a pool of public server
+  - name: internet
+    upstreams:
+      dns:
+        - ip: 8.8.8.8
+        - ip: 1.1.1.1
+    logging:
+      protocol: protobuf
+      ip: 192.168.1.200
+      port: 6000

@@ -1,0 +1,19 @@
+# Split between corporate and external DNS
+
+rules:
+  # rule to forward on your corporate dns servers
+  - name: corporate
+    zoneset:
+      - network.corporate
+      - network.internal
+    policy: passthru
+    upstreams:
+      dns:
+        - ip: 10.0.0.1
+        - ip: 10.0.0.2
+
+  # rule to forward to a pool of public server
+  - upstreams:
+      dns:
+        - ip: 8.8.8.8
+        - ip: 1.1.1.1

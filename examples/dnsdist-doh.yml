@@ -1,0 +1,12 @@
+# Basic Forwarding and Caching DNS Server to a pool of public DNS server
+# load balancing of the outgoing traffic to a pool of DoH servers in round robin
+
+rules:
+  - upstreams:
+      doh:
+        - ip: 8.8.8.8
+          port: 443
+          name: dns.google
+        - ip: 1.1.1.1
+          port: 443
+          name: cloudflare-dns.com
