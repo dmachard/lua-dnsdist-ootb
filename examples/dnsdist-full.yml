@@ -41,7 +41,7 @@ rules:
     policy: drop
     logging:
       protocol: protobuf
-      ip: 192.168.1.15
+      host: remotecollector.lab
       port: 6000
       streamid: blacklist
 
