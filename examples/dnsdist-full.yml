@@ -41,7 +41,7 @@ rules:
     policy: drop
     logging:
       protocol: protobuf
-      host: remotecollector.lab
+      ip: 127.0.0.1 #host: remotecollector.lab
       port: 6000
       streamid: blacklist
 
@@ -78,6 +78,6 @@ rules:
           port: 443
           name: cloudflare-dns.com
     logging:
-      protocol: protobuf
-      ip: 192.168.1.15
+      protocol: protobuf # protobuf|dnstap
+      ip: 127.0.0.1
       port: 6000
