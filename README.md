@@ -14,7 +14,7 @@ See the complete **[configuration](./examples/dnsdist-full.yml)** file for all o
 ## Installation
 
 1. Copy `dnsdist_ootb.lua` and the folder `dnsdist_ootb` in your `dnsdist` configuration folder (the default is `/etc/dnsdist`)
-4. Copy the `dnsdist.conf` to import this LUA module and the new configuration file.
+4. Update your `dnsdist.conf` with the following code to import the LUA module.
 
 ```lua
 -- Import module and load the YAML config
@@ -25,7 +25,7 @@ dnsdist_ootb.loadConfig{file=dnsdistpath .. "dnsdist.yml"}
 ```
 ## Get started
 
-Create a `/etc/dnsdist/dnsdist.yml` file and copy the content of the [minimal](./examples/dnsdist-minimal.yml) configuration example to start dnsdist like a `Forwarding and Caching DNS Server` to a pool of DNS public servers.
+Create a new configuration file `/etc/dnsdist/dnsdist.yml` file and copy the content of the [minimal](./examples/dnsdist-minimal.yml) configuration example to start dnsdist like a `Forwarding and Caching DNS Server` to a pool of DNS public servers.
 
 ```yaml
 # Basic Forwarding and Caching DNS Server to a pool of public DNS server
