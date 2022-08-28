@@ -2,7 +2,7 @@
 
 ![powerdns dnsdist 1.7.x](https://img.shields.io/badge/dnsdist%201.7.x-tested-green)
 
-LUA module to to configure [dnsdist](https://dnsdist.org/) in a quick way.
+LUA module to run [dnsdist](https://dnsdist.org/) in a quick way.
 
 Your configuration is composed of the following parts with **YAML** format:
 - `services`: DNS services to start (DNS, DoH, DoT)
