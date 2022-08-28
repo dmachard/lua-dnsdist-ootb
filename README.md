@@ -16,9 +16,10 @@ See the complete **[configuration](./examples/dnsdist-full.yml)** file for all o
 
 ```lua
 -- Import module and load the YAML config
-package.path = "/etc/dnsdist/" .. package.path
+dnsdistpath = "/etc/dnsdist/"
+package.path = dnsdistpath .. package.path
 dnsdist_ootb = require "dnsdist_ootb"
-dnsdist_ootb.loadConfig{file="/etc/dnsdist/dnsdist.yml"}
+dnsdist_ootb.loadConfig{file=dnsdistpath .. "dnsdist.yml"}
 ```
 ## Get started
 
@@ -56,9 +57,10 @@ rules:
 
 ```
 -- Import module
-package.path = "/etc/dnsdist/conf.d/" .. package.path
+dnsdistpath = "/etc/dnsdist/conf.d/"
+package.path = dnsdistpath .. package.path
 dnsdist_ootb = require "dnsdist_ootb"
-dnsdist_ootb.loadConfig{file="/etc/dnsdist/conf.d/dnsdist.yml"}
+dnsdist_ootb.loadConfig{file = dnsdistpath .. "dnsdist.yml"}
 ```
 
 3. Configure your `dnsdist.yml` config file
