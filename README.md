@@ -66,5 +66,6 @@ dnsdist_ootb.loadConfig{file="/etc/dnsdist/conf.d/dnsdist.yml"}
 4. Then mount the folder as a volume 
 
 ```
-sudo docker run -d -p 53:53/udp -p 53:53/tcp --restart unless-stopped --name=dnsdist --volume=$PWD/conf/:/etc/dnsdist/conf.d/ powerdns/dnsdist-17:1.7.2
+sudo docker run -d -p 53:53/udp -p 53:53/tcp --restart unless-stopped --name=dnsdist \
+ --volume=$PWD/conf/:/etc/dnsdist/conf.d/ powerdns/dnsdist-17:1.7.2
 ```
