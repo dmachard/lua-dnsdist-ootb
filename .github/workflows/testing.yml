@@ -28,10 +28,11 @@ jobs:
 
     - name: Prepare config
       run: |
-        mkdir $PWD/testconf/ && cd $PWD/testconf/
+        mkdir $PWD/testconf/
         cp $PWD/examples/dnsdist-${{ matrix.config }}.yml $PWD/testconf/dnsdist.yml
         cp -rf $PWD/testdata/ $PWD/testconf/
         cp -rf $PWD/dnsdist_ootb* $PWD/testconf/
+        cd $PWD/testconf/
         wget -nv https://raw.githubusercontent.com/dmachard/blocklist-domains/data/blocklist.cdb
         ls -lart $PWD
 
