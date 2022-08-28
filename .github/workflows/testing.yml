@@ -33,8 +33,9 @@ jobs:
         cp $PWD/dnsdist_docker.conf $PWD/testconf/dnsdist.conf
         cp $PWD/dnsdist_ootb.lua $PWD/testconf/dnsdist_ootb.lua
         cp -rf $PWD/dnsdist_ootb/ $PWD/testconf/
+        ls -lart $PWD/testconf/
 
     - name: Deploy dnsdist docker image
       run: |
-        sudo docker run -d -p 5553:53/udp -p 5553:53/tcp --name=dnsdist --volume=$PWD/:/etc/dnsdist/conf.d/:z powerdns/dnsdist-${{ matrix.dnsdist }}
+        sudo docker run -d -p 5553:53/udp -p 5553:53/tcp --name=dnsdist --volume=$PWD/testconf/:/etc/dnsdist/conf.d/:z powerdns/dnsdist-${{ matrix.dnsdist }}
         dig -p 5553 www.github.com @127.0.0.1 +timeout=10 +tries=3 +retry=3 | grep NOERROR
