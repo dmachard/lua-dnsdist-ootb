@@ -27,5 +27,5 @@ rules:
         - ip: 1.1.1.1
     logging:
       protocol: protobuf
-      ip: 192.168.1.200
+      host: remotecollector.lab
       port: 6000
