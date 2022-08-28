@@ -36,7 +36,7 @@ jobs:
         cp $PWD/testdata/server.crt $PWD/testconf/cert.pem
         cp $PWD/testdata/server.key $PWD/testconf/key.pem
         cd $PWD/testconf/
-        wget https://raw.githubusercontent.com/dmachard/blocklist-domains/data/blocklist.cdb
+        wget -nv https://raw.githubusercontent.com/dmachard/blocklist-domains/data/blocklist.cdb
         ls -lart $PWD
 
     - name: Deploy dnsdist docker image
