@@ -57,7 +57,8 @@ rules:
   # rule to forward to a pool of default DNS and DoH servers
   - name: internet
     zoneset: [ "." ]
-    policy: passthru
+    policy: passthru # passthru|drop|nxdomain
+    loadbalancing: rounrobin # roundrobin|observed
     upstreams:
       dns: 
         - ip: 8.8.8.8

@@ -75,6 +75,7 @@ Rule.new = function()
         self.ruleName=""
 
         self.zoneSet = { "." }
+        self.loadBalancing = "roundrobin"
 
         return self
 end
@@ -282,8 +283,12 @@ function ootb.run_server(arg)
         if cur_rule.upstreams.doh then
           rule.dohServers = cur_rule.upstreams.doh
         end
+        if cur_rule.upstreams.loadbalancing then
+          rule.loadBalancing = cur_rule.upstreams.loadbalancing
+        end
         -- load dnsdist config
-        lib_rules.pool{id=i, name=rule.ruleName, dnsServers=rule.dnsServers, dohServers=rule.dohServers}
+        lib_rules.pool{id=i, name=rule.ruleName, dnsServers=rule.dnsServers, dohServers=rule.dohServers,
+                       loadBalancing=rule.loadBalancing}
       end
 
       -- load dnsdist config

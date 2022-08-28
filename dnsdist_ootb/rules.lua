@@ -40,7 +40,13 @@ function rules.pool(arg)
       end
 
     -- set the load balacing policy to use
-    setPoolServerPolicy(roundrobin, pool)
+    if arg.loadBalancing == "roundrobin" then
+      lbmethod = roundrobin
+    end
+    if arg.loadBalancing == "observed" then
+      lbmethod = leastOutstanding
+    end
+    setPoolServerPolicy(lbmethod, pool)
 
     -- enable cache for the pool
     getPool(pool):setCache(pc)
