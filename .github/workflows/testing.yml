@@ -35,7 +35,7 @@ jobs:
         cp -rf $PWD/dnsdist_ootb/ $PWD/testconf/
         cd $PWD/testconf/
         wget https://raw.githubusercontent.com/dmachard/blocklist-domains/data/blocklist.cdb
-        ls -lart $PWD/testconf/
+        ls -lart $PWD
 
     - name: Deploy dnsdist docker image
       run: |
