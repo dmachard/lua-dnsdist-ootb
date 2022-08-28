@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         dnsdist: [ '17' ]
-        config: [ 'doh', 'minimal', 'blacklist', 'split' ]
+        config: [ 'full', 'doh', 'minimal', 'blacklist', 'split' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -30,9 +30,11 @@ jobs:
       run: |
         mkdir $PWD/testconf/
         cp $PWD/examples/dnsdist-${{ matrix.config }}.yml $PWD/testconf/dnsdist.yml
-        cp $PWD/dnsdist_docker.conf $PWD/testconf/dnsdist.conf
+        cp $PWD/testdata/dnsdist_docker.conf $PWD/testconf/dnsdist.conf
         cp $PWD/dnsdist_ootb.lua $PWD/testconf/dnsdist_ootb.lua
         cp -rf $PWD/dnsdist_ootb/ $PWD/testconf/
+        cp $PWD/testdata/server.crt $PWD/testconf/cert.pem
+        cp $PWD/testdata/server.key $PWD/testconf/key.pem
         cd $PWD/testconf/
         wget https://raw.githubusercontent.com/dmachard/blocklist-domains/data/blocklist.cdb
         ls -lart $PWD

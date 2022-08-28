@@ -7,14 +7,14 @@ services:
     ip4: 0.0.0.0
     ip6: "[::]"
     port: 443
-    cert: /etc/dnsdist/cert.pem
-    key: /etc/dnsdist/key.pem
+    cert: /etc/dnsdist/conf.d/cert.pem
+    key: /etc/dnsdist/conf.d/key.pem
   dot:
     ip4: 0.0.0.0
     ip6: "[::]"
     port: 853
-    cert: /etc/dnsdist/cert.pem
-    key: /etc/dnsdist/key.pem
+    cert: /etc/dnsdist/conf.d/cert.pem
+    key: /etc/dnsdist/conf.d/key.pem
 
 admin: 
   console:
@@ -36,7 +36,7 @@ rules:
   # rule to block ads/tracking/malware domains
   - name: blacklist
     qnamecdb:
-      filename: /etc/dnsdist/blocklist.cdb
+      filename: /etc/dnsdist/conf.d/blocklist.cdb
       reload: 3600
     policy: drop
     logging:
