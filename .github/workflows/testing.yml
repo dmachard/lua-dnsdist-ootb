@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         dnsdist: [ '17' ]
-        config: [ 'minimal' ]
+        config: [ 'full', 'minimal' ]
 
     steps:
     - uses: actions/checkout@v2
