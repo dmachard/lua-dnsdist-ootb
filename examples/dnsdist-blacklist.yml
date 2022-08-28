@@ -7,7 +7,7 @@ rules:
   # or generate your own blocklist from https://github.com/dmachard/blocklist-aggregator
   - name: blacklist
     qnamecdb:
-      filename: /etc/dnsdist/blocklist.cdb
+      filename: /etc/dnsdist/conf.d/blocklist.cdb
       reload: 3600
     policy: drop
 

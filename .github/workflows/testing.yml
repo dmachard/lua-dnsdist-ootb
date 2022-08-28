@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         dnsdist: [ '17' ]
-        config: [ 'doh', 'minimal' ]
+        config: [ 'doh', 'minimal', 'blacklist', 'split' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -33,6 +33,8 @@ jobs:
         cp $PWD/dnsdist_docker.conf $PWD/testconf/dnsdist.conf
         cp $PWD/dnsdist_ootb.lua $PWD/testconf/dnsdist_ootb.lua
         cp -rf $PWD/dnsdist_ootb/ $PWD/testconf/
+        cd $PWD/testconf/
+        wget https://raw.githubusercontent.com/dmachard/blocklist-domains/data/blocklist.cdb
         ls -lart $PWD/testconf/
 
     - name: Deploy dnsdist docker image
