@@ -58,7 +58,7 @@ rules:
   - name: internet
     zoneset: [ "." ]
     policy: passthru # passthru|drop|nxdomain
-    loadbalancing: rounrobin # roundrobin|observed
+    loadbalancing: roundrobin # roundrobin|observed
     upstreams:
       dns: 
         - ip: 8.8.8.8
