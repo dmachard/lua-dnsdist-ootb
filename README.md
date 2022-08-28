@@ -1,6 +1,6 @@
 # What is this?
 
-Utility to configure [dnsdist](https://dnsdist.org/) in a quick way.
+LUA module to to configure [dnsdist](https://dnsdist.org/) in a quick way.
 
 Your configuration is composed of the following parts with **YAML** format:
 - `services`: DNS services to start (DNS, DoH, DoT)
@@ -11,14 +11,14 @@ See the complete **[configuration](./examples/dnsdist-full.yml)** file for all o
 
 ## Installation
 
-1. Copy `dnsdist_utils.lua` and the folder `dnsdist_utils` in your `dnsdist` configuration folder (the default is `/etc/dnsdist`)
+1. Copy `dnsdist_ootb.lua` and the folder `dnsdist_ootb` in your `dnsdist` configuration folder (the default is `/etc/dnsdist`)
 4. Copy the `dnsdist.conf` to import this LUA module and the new configuration file.
 
 ```lua
 -- Import module and load the YAML config
 package.path = "/etc/dnsdist/" .. package.path
-dnsdist_utils = require "dnsdist_utils"
-dnsdist_utils.loadConfig{file="/etc/dnsdist/dnsdist.yml"}
+dnsdist_ootb = require "dnsdist_ootb"
+dnsdist_ootb.loadConfig{file="/etc/dnsdist/dnsdist.yml"}
 ```
 ## Get started
 
@@ -47,8 +47,8 @@ rules:
 
 1. Create the folder `conf` with the following content
    - conf/
-     - dnsdist_utils/
-     - dnsdist_utils.lua
+     - dnsdist_ootb/
+     - dnsdist_ootb.lua
      - dnsdist.conf
      - dnsdist.yml
 
@@ -57,8 +57,8 @@ rules:
 ```
 -- Import module
 package.path = "/etc/dnsdist/conf.d/" .. package.path
-dnsdist_utils = require "dnsdist_utils"
-dnsdist_utils.loadConfig{file="/etc/dnsdist/conf.d/dnsdist.yml"}
+dnsdist_ootb = require "dnsdist_ootb"
+dnsdist_ootb.loadConfig{file="/etc/dnsdist/conf.d/dnsdist.yml"}
 ```
 
 3. Configure your `dnsdist.yml` config file
@@ -68,18 +68,3 @@ dnsdist_utils.loadConfig{file="/etc/dnsdist/conf.d/dnsdist.yml"}
 ```
 sudo docker run -d -p 53:53/udp -p 53:53/tcp --restart unless-stopped --name=dnsdist --volume=$PWD/conf/:/etc/dnsdist/conf.d/ powerdns/dnsdist-17:1.7.2
 ```
-
-## More configuration options
-
-This module provide also some functions:
-
-* **dnsdist_utils.getHosname()**
-
-    Return the hostname of the server.
-
-* **dnsdist_utils.resolvHost(name)**
-
-    Resolv the provided host.
-
-    Options:
-    - name: string - dns name to resolv

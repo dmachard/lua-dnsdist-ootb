@@ -79,10 +79,10 @@ Rule.new = function()
         return self
 end
 
-local utils = {}
+local ootb = {}
 
 
-function utils.load_yaml(arg)
+function ootb.load_yaml(arg)
   infolog("loading config yaml file...")
   local f = assert(io.open(arg.file, "rb"))
   local content = f:read("*all")
@@ -92,11 +92,11 @@ function utils.load_yaml(arg)
   config = yaml.parse(content)
 
   -- finally load config
-  utils.run_server{opts=config}
+  ootb.run_server{opts=config}
 
 end
 
-function utils.run_server(arg)
+function ootb.run_server(arg)
   opts = arg.opts
 
   services = opts.services
@@ -297,8 +297,8 @@ end
 
 -- export functions
 local _M = {
-        runServer = utils.run_server,
-        loadConfig = utils.load_yaml,
+        runServer = ootb.run_server,
+        loadConfig = ootb.load_yaml,
         getHostname = lib_misc.get_hostname,
         resolvHost = lib_misc.resolv_host,
 }
