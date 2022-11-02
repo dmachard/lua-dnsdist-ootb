@@ -39,7 +39,7 @@ function rules.pool(arg)
         })
       end
 
-    -- set the load balacing policy to use
+    -- set the load balancing policy to use
     if arg.loadBalancing == "roundrobin" then
       lbmethod = roundrobin
     end
