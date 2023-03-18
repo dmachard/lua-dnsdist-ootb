@@ -1,6 +1,7 @@
 # What is this?
 
-![powerdns dnsdist 1.7.x](https://img.shields.io/badge/dnsdist%201.7.x-tested-green)
+![powerdns dnsdist 1.7.x](https://img.shields.io/badge/dnsdist%201.7.x-tested-green) ![powerdns dnsdist 1.8.x](https://img.shields.io/badge/dnsdist%201.8.x-tested-green)
+
 
 LUA module to run [dnsdist](https://dnsdist.org/) in a quick way.
 
