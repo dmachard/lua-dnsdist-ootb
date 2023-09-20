@@ -14,11 +14,11 @@ jobs:
 
     strategy:
       matrix:
-        dnsdist: [ '17', '18' ]
+        dnsdist: [ '17', '18', '19' ]
         config: [ 'full', 'doh', 'minimal', 'blacklist', 'split' ]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/setup-python@v4
 
     - name: add pdns user
